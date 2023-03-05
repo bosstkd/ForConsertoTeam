@@ -1,4 +1,4 @@
-package com.jmag.projet.application;
+package com.jmag.projet.application.ocr;
 
 import lombok.RequiredArgsConstructor;
 import net.sourceforge.tess4j.Tesseract;
@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -19,15 +21,15 @@ public class OcrService {
     public static final int DEFAULT_BUFFER_SIZE = 8192;
     private static String FILE_SOURCE_PATH = "tessFiles/markFile.tkt";
 
-    public String getStringFromFile(InputStream inputStream)
+    public String getStringFromFile(InputStream inputStream, String extension)
             throws TesseractException, IOException, URISyntaxException {
 
 
-        File file = new File(getTessDataPath("tessFiles") + "/" + buildFileName("jpg"));
+        File file = new File(getTessDataPath("tessFiles") + "/" + buildFileName(extension));
         copyInputStreamToFile(inputStream, file);
         Tesseract tesseract = new Tesseract();
         tesseract.setDatapath(getTessDataPath("tessdata"));
-        tesseract.setLanguage("fra+eng+ara");
+        tesseract.setLanguage("fra+ara");
         tesseract.setPageSegMode(1);
         tesseract.setOcrEngineMode(1);
         var result = tesseract.doOCR(file);
@@ -55,6 +57,6 @@ public class OcrService {
 
     private String buildFileName(final String extension) {
 
-        return System.currentTimeMillis() + "." + extension;
+        return System.currentTimeMillis() + extension;
     }
 }
