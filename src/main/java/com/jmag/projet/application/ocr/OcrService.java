@@ -1,37 +1,47 @@
 package com.jmag.projet.application.ocr;
 
+import com.jmag.projet.domain.exceptions.PlanerTreeBadRequestException;
 import lombok.RequiredArgsConstructor;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class OcrService {
 
+    private final Tesseract tesseract;
+
     public static final int DEFAULT_BUFFER_SIZE = 8192;
-    private static String FILE_SOURCE_PATH = "tessFiles/markFile.tkt";
+    private static final String FILE_SOURCE_PATH = "tessFiles/markFile.tkt";
+    private static final List<String> IMAGES_FORMATS = List.of(".jpg", ".jpeg", ".png");
+    private static final List<String> SUPPORTED_FORMATS = List.of(".jpg", ".jpeg", ".png", ".pdf");
 
     public String getStringFromFile(InputStream inputStream, String extension)
             throws TesseractException, IOException, URISyntaxException {
 
+        if (!SUPPORTED_FORMATS.contains(extension)) {
+            throw new PlanerTreeBadRequestException("Le format '" + extension + "' n'est valable, formats valable: " +
+                    SUPPORTED_FORMATS.stream().reduce("", (subTotal, e) -> "'" + e + "' " + subTotal));
+        }
+
+        if (IMAGES_FORMATS.contains(extension.toLowerCase())) {
+            BufferedImage imBuff = ImageIO.read(inputStream);
+            return tesseract.doOCR(imBuff);
+        }
 
         File file = new File(getTessDataPath("tessFiles") + "/" + buildFileName(extension));
         copyInputStreamToFile(inputStream, file);
-        Tesseract tesseract = new Tesseract();
-        tesseract.setDatapath(getTessDataPath("tessdata"));
-        tesseract.setLanguage("fra+ara");
-        tesseract.setPageSegMode(1);
-        tesseract.setOcrEngineMode(1);
         var result = tesseract.doOCR(file);
         file.delete();
         return result;

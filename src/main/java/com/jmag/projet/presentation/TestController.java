@@ -4,7 +4,9 @@ import com.jmag.projet.application.NumbersService;
 import com.jmag.projet.application.PlanerTreeService;
 import com.jmag.projet.application.ocr.ClassificationService;
 import com.jmag.projet.application.ocr.OcrService;
+import com.jmag.projet.application.ocr.TextExtractorService;
 import com.jmag.projet.domain.test.PlanerTree;
+import com.jmag.projet.infrastructure.ocr.configuration.DataTypeConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.sourceforge.tess4j.TesseractException;
@@ -25,6 +27,7 @@ public class TestController {
     private final NumbersService numbersService;
     private final OcrService ocrService;
     private final ClassificationService classificationService;
+    private final TextExtractorService textExtractorService;
 
     @PostMapping("/addPlanerTree")
     public PlanerTree addPlanerTree(@RequestBody PlanerTree child) {
@@ -54,6 +57,12 @@ public class TestController {
     public Map<String, List<String>> getPhrasesClassification(@RequestParam("file") MultipartFile file) {
 
         return classificationService.getPhrasesByClass(file.getInputStream(), getExtension(file));
+    }
+
+    @GetMapping("/getMatchingRegex")
+    public List<String> getMatchingRegex(@RequestParam String text, @RequestParam String regex) {
+
+        return textExtractorService.extractMatchingString(text, "\\b(0?[1-9]|[12][0-9]|3[01])(\\/|-)(0?[1-9]|1[012])(\\/|-)((19|20)\\d{2})\\b");
     }
 
     private String getExtension(MultipartFile file) {
