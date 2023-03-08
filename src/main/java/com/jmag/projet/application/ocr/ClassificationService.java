@@ -1,6 +1,7 @@
 package com.jmag.projet.application.ocr;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.jmag.projet.domain.model.DataExtractionModel;
 import com.jmag.projet.domain.model.DatasTypes;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -20,12 +21,12 @@ public class ClassificationService {
     private final DatasTypes datasTypes;
 
     @SneakyThrows
-    public Map<String, List<String>> getWordsByClass(InputStream inputStream, String extension) {
+    public Map<String, Set<String>> getWordsByClass(InputStream inputStream, String extension) {
         String text = ocrService.getStringFromFile(inputStream, extension);
         var words = getWords(text);
-        Map<String, List<String>> mapClass = new HashMap<>();
-        List<String> arWords = new ArrayList<>();
-        List<String> frWords = new ArrayList<>();
+        Map<String, Set<String>> mapClass = new HashMap<>();
+        Set<String> arWords = new HashSet<>();
+        Set<String> frWords = new HashSet<>();
         words.forEach(str -> {
             if (textContainsArabic(str)) {
                 arWords.add(str);
@@ -40,36 +41,45 @@ public class ClassificationService {
 
     @SneakyThrows
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public Map<String, List<String>> getPhrasesByClass(InputStream inputStream, String extension) {
+    public Map<String, Set<DataExtractionModel>> getPhrasesByClass(InputStream inputStream, String extension) {
         String text = ocrService.getStringFromFile(inputStream, extension);
         var phrases = getPhrases(text);
-        Map<String, List<String>> mapClass = new HashMap<>();
+        Map<String, Set<DataExtractionModel>> mapClass = new HashMap<>();
 
         var map = datasTypes.getMap();
         phrases.forEach(str -> {
 
-            map.forEach((k, v)->{
+            map.forEach((k, v) -> {
                 var listWords = extractorService.extractMatchingString(str, v);
                 addValueToMap(mapClass, k, listWords);
             });
 
             if (textContainsArabic(str)) {
-                addValueToMap(mapClass, "AR", List.of(str));
+                addValueToMap(mapClass, "AR", Set.of(DataExtractionModel.builder()
+                                .data(str)
+                                .source("Arabic")
+                        .build()));
             } else {
-                addValueToMap(mapClass, "FR", List.of(str));
+                addValueToMap(mapClass, "FR", Set.of(DataExtractionModel.builder()
+                        .data(str)
+                        .source("French")
+                        .build()));
             }
         });
         return mapClass;
     }
 
-    private void addValueToMap (Map<String, List<String>> map,  String key, List<String> values) {
+    private void addValueToMap(Map<String, Set<DataExtractionModel>> map,
+                               String key,
+                               Set<DataExtractionModel> values) {
         var valueList = getMapListValues(map, key);
         valueList.addAll(values);
         map.put(key, valueList);
     }
-    private List<String> getMapListValues(Map<String, List<String>> map, String key) {
+
+    private Set<DataExtractionModel> getMapListValues(Map<String, Set<DataExtractionModel>> map, String key) {
         var valueList = map.get(key);
-        return CollectionUtils.isEmpty(valueList) ? new ArrayList<>() : valueList;
+        return CollectionUtils.isEmpty(valueList) ? new HashSet<>() : valueList;
     }
 
     private List<String> getWords(String phrase) {

@@ -30,7 +30,7 @@ public class OcrService {
     public String getStringFromFile(InputStream inputStream, String extension)
             throws TesseractException, IOException, URISyntaxException {
 
-        if (!SUPPORTED_FORMATS.contains(extension)) {
+        if (!SUPPORTED_FORMATS.contains(extension.toLowerCase())) {
             throw new PlanerTreeBadRequestException("Le format '" + extension + "' n'est valable, formats valable: " +
                     SUPPORTED_FORMATS.stream().reduce("", (subTotal, e) -> "'" + e + "' " + subTotal));
         }
