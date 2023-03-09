@@ -1,6 +1,6 @@
 package com.jmag.projet.infrastructure.ocr.configuration;
 
-import com.jmag.projet.domain.model.DatasTypes;
+import com.jmag.projet.domain.ocr.common.DatasTypes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

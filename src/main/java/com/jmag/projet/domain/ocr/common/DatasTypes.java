@@ -1,4 +1,4 @@
-package com.jmag.projet.domain.model;
+package com.jmag.projet.domain.ocr.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DatasTypes {
+public class DatasTypes   {
 
     private Map<String, String> map;
 }

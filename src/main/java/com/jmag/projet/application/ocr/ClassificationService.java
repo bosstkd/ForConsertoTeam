@@ -1,8 +1,8 @@
 package com.jmag.projet.application.ocr;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.jmag.projet.domain.model.DataExtractionModel;
-import com.jmag.projet.domain.model.DatasTypes;
+import com.jmag.projet.domain.ocr.model.DataSourceExtractionModel;
+import com.jmag.projet.domain.ocr.common.DatasTypes;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -41,10 +41,10 @@ public class ClassificationService {
 
     @SneakyThrows
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public Map<String, Set<DataExtractionModel>> getPhrasesByClass(InputStream inputStream, String extension) {
+    public Map<String, Set<DataSourceExtractionModel>> getPhrasesByClass(InputStream inputStream, String extension) {
         String text = ocrService.getStringFromFile(inputStream, extension);
         var phrases = getPhrases(text);
-        Map<String, Set<DataExtractionModel>> mapClass = new HashMap<>();
+        Map<String, Set<DataSourceExtractionModel>> mapClass = new HashMap<>();
 
         var map = datasTypes.getMap();
         phrases.forEach(str -> {
@@ -55,12 +55,12 @@ public class ClassificationService {
             });
 
             if (textContainsArabic(str)) {
-                addValueToMap(mapClass, "AR", Set.of(DataExtractionModel.builder()
+                addValueToMap(mapClass, "AR", Set.of(DataSourceExtractionModel.builder()
                                 .data(str)
                                 .source("Arabic")
                         .build()));
             } else {
-                addValueToMap(mapClass, "FR", Set.of(DataExtractionModel.builder()
+                addValueToMap(mapClass, "FR", Set.of(DataSourceExtractionModel.builder()
                         .data(str)
                         .source("French")
                         .build()));
@@ -69,15 +69,15 @@ public class ClassificationService {
         return mapClass;
     }
 
-    private void addValueToMap(Map<String, Set<DataExtractionModel>> map,
+    private void addValueToMap(Map<String, Set<DataSourceExtractionModel>> map,
                                String key,
-                               Set<DataExtractionModel> values) {
+                               Set<DataSourceExtractionModel> values) {
         var valueList = getMapListValues(map, key);
         valueList.addAll(values);
         map.put(key, valueList);
     }
 
-    private Set<DataExtractionModel> getMapListValues(Map<String, Set<DataExtractionModel>> map, String key) {
+    private Set<DataSourceExtractionModel> getMapListValues(Map<String, Set<DataSourceExtractionModel>> map, String key) {
         var valueList = map.get(key);
         return CollectionUtils.isEmpty(valueList) ? new HashSet<>() : valueList;
     }

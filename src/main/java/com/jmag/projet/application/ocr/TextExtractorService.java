@@ -1,6 +1,6 @@
 package com.jmag.projet.application.ocr;
 
-import com.jmag.projet.domain.model.DataExtractionModel;
+import com.jmag.projet.domain.ocr.model.DataSourceExtractionModel;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -11,13 +11,13 @@ import java.util.regex.Pattern;
 @Service
 public class TextExtractorService {
 
-    public Set<DataExtractionModel> extractMatchingString(String text, String regex) {
+    public Set<DataSourceExtractionModel> extractMatchingString(String text, String regex) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(text);
-        Set<DataExtractionModel> listMatcherWords = new HashSet<>();
+        Set<DataSourceExtractionModel> listMatcherWords = new HashSet<>();
         while (matcher.find()) {
             if (!matcher.group().isBlank()) {
-                listMatcherWords.add(DataExtractionModel.builder()
+                listMatcherWords.add(DataSourceExtractionModel.builder()
                                 .data(matcher.group())
                                 .source(text)
                         .build());
