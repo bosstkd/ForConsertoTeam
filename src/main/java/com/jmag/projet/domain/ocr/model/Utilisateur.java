@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 public class Utilisateur {
 
     @Id
-    @NotBlank(message = "l'id utilisateur ne peut être null !")
     private String idUtilisateur;
     @NotBlank(message = "Le nom ou la raison sociale ne peut être vide !")
     private String nomOuRaisonSociale;

@@ -8,7 +8,7 @@ public interface DataConfigurationService {
 
     Set<DataConfiguration> findAllUtilisateurConfiguration(String idUtilisateur);
     DataConfiguration findConfiguration(String idUtilisateur, String libelleConfiguration);
-    DataConfiguration addConfiguration(DataConfiguration dataConfiguration);
-    DataConfiguration updateConfiguration(DataConfiguration dataConfiguration);
+    DataConfiguration saveConfiguration(DataConfiguration dataConfiguration);
     void deleteConfiguration(DataConfiguration dataConfiguration);
+    String getIdConfiguration(DataConfiguration dataConfiguration);
 }
