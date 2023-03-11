@@ -5,6 +5,7 @@ import com.jmag.projet.domain.ocr.service.DataConfigurationService;
 import com.jmag.projet.infrastructure.persistance.mongodb.repository.DataConfigurationRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
